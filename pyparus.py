@@ -7,6 +7,7 @@ import math
 # Initial setup
 turtle.Screen()
 t = turtle.Turtle()
+t.penup()
 
 # No delay
 t.speed(0)
@@ -18,10 +19,37 @@ def set_heading_and_move(direction, distance = block_size):
     t.setheading(direction)
     t.fd(distance)
 
-def up(): set_heading_and_move(90.0)
-def down(): set_heading_and_move(270.0)
-def left(): set_heading_and_move(180.0)
-def right(): set_heading_and_move(0.0)
+def get_dist(coord, direction = True):
+    distance = (abs(coord) % block_size)
+    if direction:
+        distance = block_size - distance
+    if distance == 0.0 or math.isclose(distance, 0.0, abs_tol = 1e-09) or math.isclose(distance, block_size):
+        return block_size
+    return distance
+
+
+def up():
+    distance = get_dist(t.pos()[1])
+    print(distance)
+    set_heading_and_move(90.0, distance)
+def down():
+    distance = get_dist(t.pos()[1], False)
+    print(distance)
+    set_heading_and_move(270.0, distance)
+def right():
+    distance = get_dist(t.pos()[0])
+    print(distance)
+    set_heading_and_move(0.0, distance)
+def left():
+    distance = get_dist(t.pos()[0], False)
+    print(distance)
+    set_heading_and_move(180.0, distance)
+
+def toggle():
+    if t.isdown():
+        t.penup()
+    else:
+        t.pendown()
 
 # Move toward perspective
 def perspective(direction = 1.0):
@@ -49,11 +77,14 @@ turtle.onkey(perspective, 'j')
 # Move away perspective point
 turtle.onkey(lambda: perspective(-1.0), 'k')
 
+# Pen up/down
+turtle.onkey(toggle, 'p')
+
 # Quit
 turtle.onkey(turtle.bye, 'q')
 
 # Undo
-turtle.onkey(lambda: turtle, 'u')
+turtle.onkey(t.undo, 'u')
 
 # Colors
 # turtle.onkey(lambda: t.color('red'), 'r')
