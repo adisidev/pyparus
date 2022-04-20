@@ -6,8 +6,10 @@ import math
 
 # Initial setup
 turtle.Screen()
+turtle.bgcolor('black')
 t = turtle.Turtle()
 t.penup()
+t.color('white')
 
 # No delay
 t.speed(0)
