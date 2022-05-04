@@ -15,6 +15,7 @@ t.color('white')
 t.speed(0)
 
 block_size = 50.0
+vp = (0.0, 0.0)
 
 # Movement functions
 def set_heading_and_move(direction, distance = block_size):
@@ -77,11 +78,49 @@ def perspective(direction = True):
         f = math.sin
         movement = get_dist(t.pos()[1], direction)
 
-    angle = t.towards(0.0, 0.0)
+    angle = t.towards(vp)
     distance = abs(movement / f(math.radians(angle)))
     if not direction:
         angle = angle - 180
     set_heading_and_move(angle, distance)
+
+# Grid
+grid = turtle.Turtle()
+grid.color('grey')
+grid.speed(0)
+grid.hideturtle()
+
+times = 10
+
+def square(trtl, size):
+    for i in range(4):
+        trtl.forward(size)
+        trtl.left(90)
+
+
+
+draw_grid = False
+
+def toggle_grid():
+    grid.hideturtle()
+    global draw_grid
+    draw_grid = not draw_grid
+
+    turtle.tracer(False)
+    r = range(-times, times)
+    if draw_grid:
+        for i in r:
+            for j in r:
+                grid.penup()
+                grid.goto(i * block_size, j * block_size)
+                grid.pendown()
+                square(grid, block_size)
+        turtle.update()
+    else:
+        grid.clear()
+
+    turtle.tracer(True)
+
 
 turtle.listen()
 
@@ -90,12 +129,13 @@ turtle.onkey(up, 'w')
 turtle.onkey(down, 's')
 turtle.onkey(left, 'a')
 turtle.onkey(right, 'd')
+turtle.onkey(toggle_grid, 'g')
 
 # Arrow keys
-turtle.onkey(up, 'Up')
-turtle.onkey(down, 'Down')
-turtle.onkey(left, 'Left')
-turtle.onkey(right, 'Right')
+# turtle.onkey(vp_up, 'Up')
+# turtle.onkey(vp_down, 'Down')
+# turtle.onkey(left, 'Left')
+# turtle.onkey(right, 'Right')
 
 # Toggle axis
 turtle.onkey(toggle_axis, 'l')
