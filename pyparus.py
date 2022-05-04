@@ -6,43 +6,45 @@ import math
 
 # Initial setup
 turtle.Screen()
-turtle.bgcolor('black')
+turtle.bgcolor('white')
 t = turtle.Turtle()
 t.penup()
-t.color('white')
+t.color('black')
 
 # No delay
 t.speed(0)
 
 block_size = 50.0
+step_size = block_size
 vp = (0.0, 0.0)
 
 # Movement functions
-def set_heading_and_move(direction, distance = block_size):
+def set_heading_and_move(direction):
     t.setheading(direction)
-    t.fd(distance)
+    global step_size
+    t.fd(step_size)
 
-def get_dist(coord, direction = True):
-    distance = (abs(coord) % block_size)
-    if direction:
-        distance = block_size - distance
-    if distance == 0.0 or math.isclose(distance, 0.0, abs_tol = 1e-09) or math.isclose(distance, block_size):
-        return block_size
-    return distance
-
+# Function to get distance
+# def get_dist(coord, direction = True):
+#     distance = (abs(coord) % block_size)
+#     if direction:
+#         distance = block_size - distance
+#     if distance == 0.0 or math.isclose(distance, 0.0, abs_tol = 1e-09) or math.isclose(distance, block_size):
+#         return block_size
+#     return distance
 
 def up():
-    distance = get_dist(t.pos()[1])
-    set_heading_and_move(90.0, distance)
+    # distance = get_dist(t.pos()[1])
+    set_heading_and_move(90.0) #, distance)
 def down():
-    distance = get_dist(t.pos()[1], False)
-    set_heading_and_move(270.0, distance)
+    # distance = get_dist(t.pos()[1], False)
+    set_heading_and_move(270.0) #, distance)
 def right():
-    distance = get_dist(t.pos()[0])
-    set_heading_and_move(0.0, distance)
+    # distance = get_dist(t.pos()[0])
+    set_heading_and_move(0.0) #, distance)
 def left():
-    distance = get_dist(t.pos()[0], False)
-    set_heading_and_move(180.0, distance)
+    # distance = get_dist(t.pos()[0], False)
+    set_heading_and_move(180.0) #, distance)
 
 def toggle_pen():
     if t.isdown():
@@ -50,13 +52,13 @@ def toggle_pen():
     else:
         t.pendown()
 
-next_x = True
+# next_x = True
 
-def toggle_axis():
+# def toggle_axis():
 
-    # Swap axis
-    global next_x
-    next_x = not next_x
+#     # Swap axis
+#     global next_x
+#     next_x = not next_x
 
 
 # Move toward perspective
@@ -65,25 +67,25 @@ def perspective(direction = True):
     # Draw till next integer axis value
 
     # Choose axis
-    global next_x
+    # global next_x
 
     # X axis
-    if next_x:
-        f = math.cos
+    # if next_x:
+    #     f = math.cos
 
         # How much do we want to move to reach the next integer axis value
-        movement = get_dist(t.pos()[0], direction)
+        # movement = get_dist(t.pos()[0], direction)
 
     # Y axis
-    else:
-        f = math.sin
-        movement = get_dist(t.pos()[1], direction)
+    # else:
+    #     f = math.sin
+        # movement = get_dist(t.pos()[1], direction)
 
     angle = t.towards(vp)
-    distance = abs(movement / f(math.radians(angle)))
+    # distance = abs(movement / f(math.radians(angle)))
     if not direction:
         angle = angle - 180
-    set_heading_and_move(angle, distance)
+    set_heading_and_move(angle) #, distance)
 
 # Grid
 grid = turtle.Turtle()
@@ -98,8 +100,9 @@ times = 12
 draw_pgrid = False
 
 pgrid = turtle.Turtle()
-pgrid.color('grey')
+pgrid.color('#808080')
 pgrid.speed(0)
+pgrid.pensize(2)
 pgrid.hideturtle()
 
 def toggle_pgrid(update_vp = False):
@@ -117,7 +120,7 @@ def toggle_pgrid(update_vp = False):
         r = range(-times, times)
 
         # Horizon line
-        pgrid.color('red')
+        pgrid.color('#e74c3c')
         pgrid.penup()
         pgrid.goto(block_size * -times, vp[1])
         pgrid.pendown()
@@ -128,7 +131,7 @@ def toggle_pgrid(update_vp = False):
         pgrid.penup()
         pgrid.goto(vp)
         pgrid.pendown()
-        pgrid.dot(diameter, 'blue')
+        pgrid.dot(diameter, '#34495e')
 
     else:
         pgrid.clear()
@@ -150,7 +153,7 @@ def vp_left():
     toggle_pgrid(True)
 
 def vp_right():
-    global v
+    global vp
     vp = (vp[0] + block_size, vp[1])
     toggle_pgrid(True)
 
@@ -183,6 +186,15 @@ def toggle_grid():
         toggle_pgrid()
         toggle_pgrid()
 
+step_sizes = [block_size, (block_size / 10.0)] #, (block_size / 20.0)]
+size_selection = 0
+
+def toggle_stepsize():
+    global size_selection, step_sizes, step_size
+
+    size_selection = (size_selection + 1) % len(step_sizes)
+    step_size = step_sizes[size_selection]
+
 # Interactivity
 turtle.listen()
 
@@ -201,7 +213,7 @@ turtle.onkey(vp_left, 'Left')
 turtle.onkey(toggle_pgrid, ';')
 
 # Toggle axis
-turtle.onkey(toggle_axis, 'l')
+turtle.onkey(toggle_stepsize, 'l')
 
 # Move to perspective point
 turtle.onkey(perspective, 'j')
@@ -217,7 +229,7 @@ turtle.onkey(toggle_pen, 'f')
 turtle.onkey(turtle.bye, 'q')
 
 # Undo
-turtle.onkey(t.undo, 'u')
+turtle.onkey(t.undo, 'z')
 
 # Colors
 # turtle.onkey(lambda: t.color('red'), 'r')
