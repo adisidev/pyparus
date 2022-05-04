@@ -58,6 +58,7 @@ def toggle_axis():
     global next_x
     next_x = not next_x
 
+
 # Move toward perspective
 def perspective(direction = True):
 
@@ -90,22 +91,82 @@ grid.color('grey')
 grid.speed(0)
 grid.hideturtle()
 
-times = 10
+# Grid sizes
+times = 12
 
+# Perspective Grid
+draw_pgrid = False
+
+pgrid = turtle.Turtle()
+pgrid.color('grey')
+pgrid.speed(0)
+pgrid.hideturtle()
+
+def toggle_pgrid(update_vp = False):
+    global vp, draw_pgrid
+
+    if update_vp:
+        pgrid.clear()
+        draw_pgrid = True
+
+    if not update_vp:
+        draw_pgrid = not draw_pgrid
+
+    turtle.tracer(False)
+    if draw_pgrid:
+        r = range(-times, times)
+
+        # Horizon line
+        pgrid.color('red')
+        pgrid.penup()
+        pgrid.goto(block_size * -times, vp[1])
+        pgrid.pendown()
+        pgrid.goto(block_size * +times, vp[1])
+
+        # Vanishing point
+        diameter = 10
+        pgrid.penup()
+        pgrid.goto(vp)
+        pgrid.pendown()
+        pgrid.dot(diameter, 'blue')
+
+    else:
+        pgrid.clear()
+    turtle.tracer(True)
+
+def vp_up():
+    global vp
+    vp = (vp[0], vp[1] + block_size)
+    toggle_pgrid(True)
+
+def vp_down():
+    global vp
+    vp = (vp[0], vp[1] - block_size)
+    toggle_pgrid(True)
+
+def vp_left():
+    global vp
+    vp = (vp[0] - block_size, vp[1])
+    toggle_pgrid(True)
+
+def vp_right():
+    global v
+    vp = (vp[0] + block_size, vp[1])
+    toggle_pgrid(True)
+
+# Square grid
+draw_grid = False
+
+# Draw one square
 def square(trtl, size):
     for i in range(4):
         trtl.forward(size)
         trtl.left(90)
 
-
-
-draw_grid = False
-
+# Toggle square grid
 def toggle_grid():
-    grid.hideturtle()
     global draw_grid
     draw_grid = not draw_grid
-
     turtle.tracer(False)
     r = range(-times, times)
     if draw_grid:
@@ -115,13 +176,14 @@ def toggle_grid():
                 grid.goto(i * block_size, j * block_size)
                 grid.pendown()
                 square(grid, block_size)
-        turtle.update()
     else:
         grid.clear()
-
     turtle.tracer(True)
+    if draw_pgrid:
+        toggle_pgrid()
+        toggle_pgrid()
 
-
+# Interactivity
 turtle.listen()
 
 # Movement
@@ -132,10 +194,11 @@ turtle.onkey(right, 'd')
 turtle.onkey(toggle_grid, 'g')
 
 # Arrow keys
-# turtle.onkey(vp_up, 'Up')
-# turtle.onkey(vp_down, 'Down')
-# turtle.onkey(left, 'Left')
-# turtle.onkey(right, 'Right')
+turtle.onkey(vp_up, 'Up')
+turtle.onkey(vp_down, 'Down')
+turtle.onkey(vp_right, 'Right')
+turtle.onkey(vp_left, 'Left')
+turtle.onkey(toggle_pgrid, ';')
 
 # Toggle axis
 turtle.onkey(toggle_axis, 'l')
